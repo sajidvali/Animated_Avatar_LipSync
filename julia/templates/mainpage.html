@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    
+    <style>
+        .juvi{
+            width: 200px;
+            text-align: center;
+            display: block;
+            background-color: transparent;
+            border: 1px solid transparent;
+            margin-right: 10px;
+            margin-bottom: 1px;
+            float: left;
+        }
+        #fix{
+            position: absolute;
+            z-index: -1;
+        }
+        #data{
+            margin-top:200px;
+        }
+    </style>
+    <script src ="{% static 'julia/mainpage.js' %}"></script>
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+    <div>
+        <div class="juvi">
+            {% csrf_token %}
+            <div id="image">
+                    <img src='{% static "julia/images/julia_full.png" %}' id ='fix' alt="static image">
+                    <img src='' id='change' path='{% static "julia/images/" %}'>
+                    
+            </div>
+            <textarea name="data" id="data" cols="10" rows="10"></textarea><br>
+            <!-- <button onclick="run({{ viseme }})">submit</button> -->
+            <button id="go">Get</button>
+        </div>
+    </div>
+    <script>
+            $("#go").click(function(){
+                console.log("this")
+                $.post("/julia/",{
+                    data:$("#data").val(),
+                },
+            function(data,status){
+                run(data['viseme']);
+            })
+            });
+    </script>    
+</body>
+
+</html>
