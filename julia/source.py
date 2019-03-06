@@ -2,28 +2,30 @@ import nltk.corpus
 import nltk
 
 
-def word_to_viseme_list(words, punc, space, speedrate):
+def word_to_viseme_list(words):
     a = nltk.corpus.cmudict.dict()
     l = []
     for w in words:
-        if w in '.!?,':
-            #l.append((w, punc * speedrate))
-            l.append(w)
-        elif w == ' ':
-            #l.append((w, space * speedrate))
-            l.append(w)
+        if w == '.':
+            for i in range(11):
+                l.append(phoneme_to_viseme_index(''))
+        elif w == ',':
+            for i in range(8):
+                l.append(phoneme_to_viseme_index(''))
+        elif w in '?!':
+            for i in range(10):
+                l.append(phoneme_to_viseme_index(''))
+        elif w.lower() in a:
+            for i in a[w.lower()][0]:
+                p = phoneme_to_viseme_index(i[:2])
+                l.append(p)
         else:
-            if w.lower() in a:
-                for i in a[w.lower()][0]:
-                    l.append(phoneme_to_viseme_index(i[:2]))
-                    #print(w)
-                    #l.append((phoneme_to_viseme_index(i[:2]), speedrate))
-            else:
-                print('keyerror')
+            print('key error:', w)
+    l.append(0)
     return l
 
 
-f = {0: 0,
+f = {0: 'julia_full.png',
      2: 'julia_mouth_wide5.png',
      1: 'julia_mouth_wide5.png',
      3: 'julia_mouth_narrow_o.png',
@@ -91,13 +93,11 @@ def phoneme_to_viseme_index(phoneme):
         }
     return m[phoneme]
 
+
 def viseme_index(sent):
-    #"And as I told you, those thirty-five dollars are not for me, but for all the poor farmers."
-    words = nltk.word_tokenize(sent)
+    words = nltk.word_tokenize(sent.replace('\n', '!'))
     new_words = [i for j in words for i in j.split('-')]
-    punc = 0.3
-    space = 0.2
-    speedrate = 0.5
-    list_of_visemes = word_to_viseme_list(new_words, punc, space, speedrate)
-    return list_of_visemes
+    print(new_words)
+    return word_to_viseme_list(new_words)
+
 

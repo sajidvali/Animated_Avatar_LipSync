@@ -6,43 +6,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+
     <style>
-        .juvi{
-            width: 200px;
-            text-align: center;
-            display: block;
-            background-color: transparent;
-            border: 1px solid transparent;
-            margin-right: 10px;
-            margin-bottom: 1px;
-            float: left;
+        .center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: auto;
         }
-        #fix{
-            position: absolute;
+        .jumbotron{
+            height: 35%;
+        }
+        {#.fix{#}
+        {#    position:absolute;#}
+        {#    object-fit: contain;#}
+        {#}#}
+        {##fix{#}
+        {#    z-index:-1;#}
+        {#}#}
+        #image{
+            width:200px;
+            height:200px;
+            background-image: url('{% static "julia/images/julia_full.png" %}');
             z-index: -1;
+            margin-bottom: 10px;
         }
-        #data{
-            margin-top:200px;
+        #sprite{
+            width: 200px;
+            height: 200px;
+            background-image: url('{% static "julia/images/julia_horizontal_21_sprite.png" %}');
+            background-position: 0px 0px;
         }
+
+
     </style>
     <script src ="{% static 'julia/mainpage.js' %}"></script>
 </head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.1/css/materialize.min.css">
+<div id="modal1" class="modal">
+  <h4>Speech Synthesis not supported</h4>
+  <p>Your browser does not support speech synthesis.</p>
+  <p>We recommend you use Google Chrome.</p>
+  <div class="action-bar">
+    <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Close</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.1/js/materialize.min.js"></script> -->
+
+<script>
+var speak = function(text) {
+          var msg = new SpeechSynthesisUtterance();
+          var voices = window.speechSynthesis.getVoices();
+          {#msg.voice = voices[$('#voices').val()];#}
+          msg.rate = $('#rate').val() / 10;
+          msg.pitch = $('#pitch').val();
+          msg.text = text;
+          var t;
+            msg.onstart = function (event) {
+                t = event.timeStamp;
+                console.log(t);
+            };
+          speechSynthesis.speak(msg);
+          msg.onend=function (event) {
+                t = event.timeStamp - t;
+                console.log(event.timeStamp);
+                console.log((t / 1000) + " seconds");
+          }
+      }
+</script>
+
 <body>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Lip Sync Avatar</h1>
+            <h3>Enter Text and our Avatar speaks it for You..</h3>
+        </div>
+        <div class="container">
+            <form class="col s8 offset-s2">
+                <div class="row">
+                  <div class="col s6">
+                    <label>Rate</label>
+                    <p class="range-field">
+                      <input type="range" id="rate" min="1" max="10" value="5" />
+                    </p>
+                  </div>
+{#                    <label id="minutes">00</label>:<label id="seconds">00</label>#}
 
-
-    <div>
-        <div class="juvi">
+                  <div class="col s6">
+                    <label>Pitch</label>
+                    <p class="range-field">
+                      <input type="range" id="pitch" min="0" max="2" value="1" />
+                    </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div>
             {% csrf_token %}
-            <div id="image">
-                    <img src='{% static "julia/images/julia_full.png" %}' id ='fix' alt="static image">
-                    <img src='' id='change' path='{% static "julia/images/" %}'>
-                    
+            <div id="image" class="image-responsive center">
+                <canvas id ='sprite'></canvas>
             </div>
-            <textarea name="data" id="data" cols="10" rows="10"></textarea><br>
-            <!-- <button onclick="run({{ viseme }})">submit</button> -->
-            <button id="go">Get</button>
+            <div class="center">
+                <textarea  name="data" id="data" rows="5" cols="50"></textarea><br>
+                <input type="button" id="go" value="Submit" tabindex="3" class="btn btn-primary btn-block">
+            </div>
         </div>
     </div>
     <script>
@@ -51,11 +123,11 @@
                 $.post("/julia/",{
                     data:$("#data").val(),
                 },
-            function(data,status){
+            function(data){
                 run(data['viseme']);
             })
             });
-    </script>    
+            $("#data").val('');
+    </script>
 </body>
-
 </html>
